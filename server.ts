@@ -1,5 +1,5 @@
-import express, { Request, Response} from "express";
-const app = express();
+import express, { Request, response, Response} from "express";
+export const app = express();
 const port = 8080;
 
 const jsonBodyMiddleware = express.json();
@@ -14,7 +14,7 @@ const db = {
 	],
 };
 
-const HTTP_STATUSES = {
+export const HTTP_STATUSES = {
 	OK_200: 200,
 	CREATED_201: 201,
 	NO_CONTENT_204: 204,
@@ -51,7 +51,11 @@ app.delete("/courses/:id", (req: Request, res: Response) => {
 });
 
 app.post("/courses", (req: Request, res: Response) => {
-	console.log(req.body);
+	if (!req.body.title) {
+		res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400);
+		return;
+	}
+
 	const createdCourse = {
 		id: +new Date(),
 		title: req.body.title,
@@ -76,6 +80,11 @@ app.put("/courses/:id", (req: Request, res: Response) => {
 	foundCourse.title = req.body.title;
 
 	res.json(foundCourse);
+});
+
+app.delete('/__test__/data', (req: Request, res: Response) => {
+	db.courses = [];
+	response.sendStatus(HTTP_STATUSES.OK_200)
 });
 
 app.listen(port, () => {
