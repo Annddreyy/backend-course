@@ -4,6 +4,7 @@ import { CoursesQueryModel } from "../models/CoursesQueryModel";
 import { CourseUpdateModel } from "../models/CourseUpdateModel";
 import { CourseViewModel } from "../models/CourseViewModel";
 import { URIParamsCourseIdModel } from "../models/URIParamsCourseIdModel";
+import { coursesRepository } from "../repositories/coursesRepository";
 import { RequestWithBody, RequestWithParams, RequestWithParamsAndBody, RequestWithQuery } from "../types";
 import express, { Response, Request } from "express";
 
@@ -17,13 +18,7 @@ export const getCoursesRouter = (db: DB) => {
             req: RequestWithQuery<CoursesQueryModel>,
             res: Response<CourseViewModel[]>
         ) => {
-            let foundCourses = db.courses;
-            if (req.query.title) {
-                foundCourses = db.courses.filter((c) =>
-                    c.title.includes(req.query.title as string)
-                );
-            }
-    
+            const foundCourses = coursesRepository.getCourses(req.query.title);
             res.json(
                 foundCourses.map((course) => {
                     return {
