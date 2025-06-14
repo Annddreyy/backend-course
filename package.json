@@ -3,19 +3,23 @@
     "@types/jest": "^29.5.14",
     "express": "^5.1.0",
     "jest": "^30.0.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "ts-jest": "^29.4.0"
   },
   "scripts": {
-    "dev": "nodemon --inspect dist/server.js",
+    "dev": "nodemon --inspect dist/src/server.js",
     "watch": "tsc -w",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "test": "jest --watch"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.1",
     "@types/supertest": "^6.0.3",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.1",
     "ts-node": "^10.9.2",

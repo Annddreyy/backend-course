@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
-const server_1 = require("../../server");
+const server_1 = require("../../src/server");
 describe("/course", () => {
     beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, supertest_1.default)(server_1.app).delete("/__test__/data");

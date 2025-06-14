@@ -35,16 +35,17 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HTTP_STATUSES = exports.app = void 0;
 const express_1 = __importStar(require("express"));
+const swagger_1 = require("../swagger");
 exports.app = (0, express_1.default)();
 const port = 8080;
 const jsonBodyMiddleware = express_1.default.json();
 exports.app.use(jsonBodyMiddleware);
 const db = {
     courses: [
-        { id: 1, title: "front-end" },
-        { id: 2, title: "back-end" },
-        { id: 3, title: "automation qa" },
-        { id: 4, title: "devops" },
+        { id: 1, title: "front-end", usersCount: 10 },
+        { id: 2, title: "back-end", usersCount: 10 },
+        { id: 3, title: "automation qa", usersCount: 10 },
+        { id: 4, title: "devops", usersCount: 10 },
     ],
 };
 exports.HTTP_STATUSES = {
@@ -54,12 +55,38 @@ exports.HTTP_STATUSES = {
     BAD_REQUEST_400: 400,
     NOT_FOUND_404: 404,
 };
+/**
+ * @swagger
+ * /courses:
+ *   get:
+ *     summary: Получение списка курсов
+ *     requestBody:
+ *       required:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "New course"
+ *     responses:
+ *       200:
+ *         description: Данные получены
+ */
 exports.app.get("/courses", (req, res) => {
     let foundCourses = db.courses;
     if (req.query.title) {
         foundCourses = db.courses.filter((c) => c.title.includes(req.query.title));
     }
-    res.json(foundCourses);
+    res.json(foundCourses.map((course) => {
+        return {
+            id: course.id,
+            title: course.title,
+        };
+    }));
 });
 exports.app.get("/courses/:id", (req, res) => {
     const id = +req.params.id;
@@ -70,10 +97,6 @@ exports.app.get("/courses/:id", (req, res) => {
     }
     res.json(found);
 });
-exports.app.delete("/courses/:id", (req, res) => {
-    db.courses = db.courses.filter((c) => c.id !== +req.params.id);
-    res.sendStatus(exports.HTTP_STATUSES.NO_CONTENT_204);
-});
 exports.app.post("/courses", (req, res) => {
     if (!req.body.title) {
         res.sendStatus(exports.HTTP_STATUSES.BAD_REQUEST_400);
@@ -82,16 +105,21 @@ exports.app.post("/courses", (req, res) => {
     const createdCourse = {
         id: +new Date(),
         title: req.body.title,
+        usersCount: 10,
     };
     db.courses.push(createdCourse);
     res.status(exports.HTTP_STATUSES.CREATED_201).json(createdCourse);
+});
+exports.app.delete("/courses/:id", (req, res) => {
+    db.courses = db.courses.filter((c) => c.id !== +req.params.id);
+    res.sendStatus(exports.HTTP_STATUSES.NO_CONTENT_204);
 });
 exports.app.put("/courses/:id", (req, res) => {
     if (!req.body.title) {
         res.sendStatus(exports.HTTP_STATUSES.BAD_REQUEST_400);
         return;
     }
-    const foundCourse = db.courses.find(c => c.id === +req.params.id);
+    const foundCourse = db.courses.find((c) => c.id === +req.params.id);
     if (!foundCourse) {
         res.sendStatus(exports.HTTP_STATUSES.NOT_FOUND_404);
         return;
@@ -99,10 +127,11 @@ exports.app.put("/courses/:id", (req, res) => {
     foundCourse.title = req.body.title;
     res.json(foundCourse);
 });
-exports.app.delete('/__test__/data', (req, res) => {
+exports.app.delete("/__test__/data", (req, res) => {
     db.courses = [];
     express_1.response.sendStatus(exports.HTTP_STATUSES.OK_200);
 });
+(0, swagger_1.setupSwagger)(exports.app);
 exports.app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });

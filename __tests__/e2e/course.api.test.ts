@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app, HTTP_STATUSES } from "../../server";
+import { app, HTTP_STATUSES } from "../../src/server";
 
 describe("/course", () => {
 	beforeAll(async () => {
